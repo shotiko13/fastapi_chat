@@ -42,3 +42,7 @@ async def endpoint(websocket: WebSocket, token: str):
         manager.disconnect(websocket)
         await manager.broadcast(f"{username} left the chat.")
 
+@app.post("/register", response_class=HTMLResponse)
+def register_form(request: Request):
+    username = request.username
+    password = request.password

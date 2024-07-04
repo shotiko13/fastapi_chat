@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
-from .config import SECRET_KEY, ALGORITHM
-from .models import TokenData
+from ..configuration.config import SECRET_KEY, ALGORITHM
+from ..db.models import TokenData
 from .jwt import decode_token
-from .models import User
+from ..db.models import User
 
 from fastapi.security import OAuth2PasswordBearer
 

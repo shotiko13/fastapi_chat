@@ -8,3 +8,7 @@ config = toml.load(CONFIG_PATH)
 SECRET_KEY = config["auth"]["secret_key"]
 ALGORITHM = config["auth"]["algorithm"]
 ACCESS_TOKEN_MINUTES = config["auth"]["access_token_expire_minutes"]
+
+"""MongoDB Configuration"""
+CONNECTION_STRING = config["mongodb"]["connection_string"]
+DATABASE_NAME = config["mongodb"]["database_name"]
