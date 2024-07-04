@@ -30,9 +30,8 @@ async def login_for_access_token(request: Request, username: str = Form(...), pa
 
 @app.websocket("/server/{token}")
 async def endpoint(websocket: WebSocket, token: str):
-    user = await get_current_user(token)
+    user = get_current_user(token)
     username = user.username
-    print(username)
     await manager.connect(websocket, token)
     try:
         while True:

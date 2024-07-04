@@ -25,6 +25,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     print(token)
     if payload is None:
         raise credentials_exception
+    
+    print(payload)
     token_data = TokenData(**payload)
     return token_data
 
