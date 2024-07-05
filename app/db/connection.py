@@ -39,8 +39,10 @@ class MongoConnector:
     def update_one(self, selector, collection, data):
         self.db[collection].update_one(selector, {"$set": data}, upsert=True)
 
-    def create_index(self, collection, name):
+    def create_index(self, collection, name, unique=False):
         return self.db[collection].create_index([(name, 1)])
 
     def info_index(self, collection):
         return self.db[collection].index_information()
+
+connector = MongoConnector()

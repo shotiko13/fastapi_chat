@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
-from ..configuration.config import SECRET_KEY, ALGORITHM
-from ..db.models import TokenData
+from configuration.config import SECRET_KEY, ALGORITHM
+from db.models import TokenData
 from .jwt import decode_token
-from ..db.models import User
+from db.models import User
 from db.user_repository import user_repository
 
 from fastapi.security import OAuth2PasswordBearer
@@ -36,6 +36,7 @@ def get_user(db, username: str):
 
 def authenticate_user(username: str, password: str):
     user = user_repository.find_user(username)
+    print(user)
     if not user or not verify_password(password, user["password"]):
         return False
     return True

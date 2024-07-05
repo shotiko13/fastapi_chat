@@ -1,18 +1,18 @@
-from connection import get_database
 import bcrypt
 from pymongo.errors import PyMongoError
-from connection import MongoConnector
+from pymongo import ASCENDING
+from .connection import connector
 
 class UserRepository:
 
     def __init__(self) -> None:
-        self.connection = MongoConnector()
-        self.connection.create_index("username")
+        self.collection = connector.db["users"]
+        connector.create_index("users", "username", unique=True)
 
     def register_user(self, username, password) -> dict[str, str]:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         try:
-            self.connection.db.insert_one({
+            self.collection.insert_one({
             "username": username,
             "password": hashed_password,
         })
@@ -28,7 +28,7 @@ class UserRepository:
         pass
     
     def find_user(self, username):
-        user = self.connection.db.find_one({"username": username})
+        user = self.collection.find_one({"username": username})
         return user
 
 user_repository = UserRepository()

@@ -4,6 +4,7 @@ from core.manager import manager
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from auth.jwt import create_access_token
+from db.user_repository import user_repository
 
 app = FastAPI()
 
@@ -43,6 +44,13 @@ async def endpoint(websocket: WebSocket, token: str):
         await manager.broadcast(f"{username} left the chat.")
 
 @app.post("/register", response_class=HTMLResponse)
-def register_form(request: Request):
-    username = request.username
-    password = request.password
+async def register(request: Request, username: str = Form(...), password: str = Form(...)):
+    result = user_repository.register_user(username, password)
+    if result:
+        return templates.TemplateResponse("register_success.html", {"request": request, "username": username})
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Registration failed")  
+    
+@app.get("/register", response_class=HTMLResponse)
+async def register_form(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
