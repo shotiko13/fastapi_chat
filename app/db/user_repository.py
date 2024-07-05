@@ -1,42 +1,34 @@
 from connection import get_database
 import bcrypt
 from pymongo.errors import PyMongoError
+from connection import MongoConnector
 
 class UserRepository:
 
-    try:
-        db = get_database()
-        collection = db["users"]
-    except PyMongoError as e:
-        print(f"Database connection error: {e}")
+    def __init__(self) -> None:
+        self.connection = MongoConnector()
+        self.connection.create_index("username")
 
-    @classmethod
-    def register_user(cls, username, password) -> dict[str, str]:
-        if cls.verify_unique_user(username):
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            try:
-                cls.collection.insert_one({
-                "username": username,
-                "password": hashed_password,
-            })
-            except PyMongoError:
-                return {
-                    "message": "Error adding in the database"
-                }
-            return {
-                "message": "user registered successfully",
-            }
-        else:
-            return {
-                "message": "username already exists in the database"
-            }
-
-    @classmethod
-    def verify_unique_user(cls, username) -> bool:
+    def register_user(self, username, password) -> dict[str, str]:
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         try:
-            user = cls.collection.find_one({"username": username})
+            self.connection.db.insert_one({
+            "username": username,
+            "password": hashed_password,
+        })
         except PyMongoError:
             return {
-                "Message": "error querying for user"
+                "message": "Error adding in the database"
             }
-        return user is None
+        return {
+            "message": "user registered successfully",
+        }
+
+    def verify_unique_user(self, username) -> bool:
+        pass
+    
+    def find_user(self, username):
+        user = self.connection.db.find_one({"username": username})
+        return user
+
+user_repository = UserRepository()

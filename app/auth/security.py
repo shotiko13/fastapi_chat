@@ -3,17 +3,12 @@ from ..configuration.config import SECRET_KEY, ALGORITHM
 from ..db.models import TokenData
 from .jwt import decode_token
 from ..db.models import User
+from db.user_repository import user_repository
 
 from fastapi.security import OAuth2PasswordBearer
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "password": "secret"
-    }
-}
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -40,7 +35,7 @@ def get_user(db, username: str):
     return None
 
 def authenticate_user(username: str, password: str):
-    user = fake_users_db.get(username)
+    user = user_repository.find_user(username)
     if not user or not verify_password(password, user["password"]):
         return False
     return True
