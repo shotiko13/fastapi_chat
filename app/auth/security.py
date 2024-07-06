@@ -4,6 +4,7 @@ from db.models import TokenData
 from .jwt import decode_token
 from db.models import User
 from db.user_repository import user_repository
+import bcrypt
 
 from fastapi.security import OAuth2PasswordBearer
 
@@ -17,16 +18,15 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         headers={"WWW-Authenticate": "Bearer"},
     )
     payload = decode_token(token)
-    print(token)
+    
     if payload is None:
         raise credentials_exception
-    
-    print(payload)
+
     token_data = TokenData(**payload)
     return token_data
 
-def verify_password(plain, hashed):
-    return plain == hashed
+def verify_password(password, hashed_password):
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def get_user(db, username: str):
     user = db.get(username)
@@ -36,7 +36,6 @@ def get_user(db, username: str):
 
 def authenticate_user(username: str, password: str):
     user = user_repository.find_user(username)
-    print(user)
     if not user or not verify_password(password, user["password"]):
         return False
     return True

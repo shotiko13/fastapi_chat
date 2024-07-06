@@ -29,6 +29,7 @@ class UserRepository:
     
     def find_user(self, username):
         user = self.collection.find_one({"username": username})
+
         return user
 
 user_repository = UserRepository()
